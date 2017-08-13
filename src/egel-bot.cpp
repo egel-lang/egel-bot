@@ -219,7 +219,6 @@ public:
         // set nick and user, join the channel
         out("NICK " + _nick);
         out("USER " + _nick + " localhost 0 : egel language IRC bot");
-        out("JOIN #" + _channel);
 
         // start up the module system
         OptionsPtr oo = Options().clone();
@@ -310,6 +309,7 @@ public:
     }
 
     void process_MOTD_end(const UnicodeString& in) {
+        out("JOIN #" + _channel);
     }
 
     void process_name_reply(const UnicodeString& in) {
