@@ -7,6 +7,7 @@
 #include <netdb.h>
 #include <string.h>
 #include <vector>
+#include <functional>
 
 #include "utils.hpp"
 #include "position.hpp"
@@ -147,6 +148,49 @@ private:
     int _fd;
 };
 
+// System.say o
+// send a PRIVMSG to the channel
+class Say: public Monadic {
+public:
+    MONADIC_PREAMBLE(Say, "System", "say");
+
+    typedef std::function<void(const UnicodeString&)> say_handler_t;
+
+    void set_handler(say_handler_t h) {
+        _say_handler = h;
+    }
+
+    void say(const UnicodeString& msg) const {
+        _say_handler(msg);
+    }
+
+    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+
+        static VMObjectPtr nop = nullptr;
+        if (nop == nullptr) nop = machine()->get_data_string("System", "nop");
+
+        if (arg0->tag() == VM_OBJECT_INTEGER) {
+            say(arg0->to_text());
+            return nop;
+        } else if (arg0->tag() == VM_OBJECT_FLOAT) {
+            say(arg0->to_text());
+            return nop;
+        } else if (arg0->tag() == VM_OBJECT_CHAR) {
+            say(arg0->to_text());
+            return nop;
+        } else if (arg0->tag() == VM_OBJECT_TEXT) {
+            auto s = VM_OBJECT_TEXT_VALUE(arg0);
+            say(s);
+            return nop;
+        } else {
+            return nullptr;
+        }
+    }
+
+private:
+    say_handler_t  _say_handler;
+};
+
 class IRCHandler {
 public:
     IRCHandler(const UnicodeString& node, const UnicodeString& service, const UnicodeString& channel, const UnicodeString& nick):
@@ -182,8 +226,18 @@ public:
         NamespacePtr env = Namespace().clone();
         mm->init(oo, _machine, env);
 
+        // bypass module loading and directly insert local combinator into machine.
+        auto say = (std::static_pointer_cast<Say>) (Say(_machine).clone());
+        say->set_handler(
+                std::bind( &IRCHandler::out_message, this, std::placeholders::_1)
+            );
+
+        mm->declare_object(say);
+
         // fire up the evaluator
         _eval = new Eval(mm);
+        _eval->eval_load("script.eg");
+        _eval->eval_command("using System");
     }
 
     void link(const UnicodeString& node, const UnicodeString& service) {
