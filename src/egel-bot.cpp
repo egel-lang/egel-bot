@@ -161,7 +161,9 @@ public:
     }
 
     void say(const UnicodeString& msg) const {
-        _say_handler(msg);
+        UnicodeString m = msg;
+        m = m.findAndReplace("\n","-");
+        _say_handler(m);
     }
 
     VMObjectPtr apply(const VMObjectPtr& arg0) const override {
