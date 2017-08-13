@@ -238,8 +238,14 @@ public:
 
         // fire up the evaluator
         _eval = new Eval(mm);
-        _eval->eval_load("script.eg");
-        _eval->eval_command("using System");
+
+        try {
+            _eval->eval_load("script.eg");
+            _eval->eval_command("using System");
+        } catch (Error e) {
+            std::cerr << e << std::endl;
+            exit(EXIT_FAILURE);
+        }
     }
 
     void link(const UnicodeString& node, const UnicodeString& service) {
@@ -282,7 +288,7 @@ public:
         return s.remove(0, command.length()+1);
     }
 
-	void process() {
+    void process() {
         UnicodeString s;
         while (true) {
             s = in();
@@ -295,30 +301,30 @@ public:
                 }
             }
         }
-	}
-	
+    }
+    
     void process_welcome(const UnicodeString& in) {
-	}
+    }
 
-	void process_MOTD(const UnicodeString& in) {
-	}
+    void process_MOTD(const UnicodeString& in) {
+    }
 
-	void process_MOTD_end(const UnicodeString& in) {
-	}
+    void process_MOTD_end(const UnicodeString& in) {
+    }
 
-	void process_name_reply(const UnicodeString& in) {
-	}
+    void process_name_reply(const UnicodeString& in) {
+    }
 
-	void process_name_reply_end(const UnicodeString& in) {
-	}
+    void process_name_reply_end(const UnicodeString& in) {
+    }
 
-	void process_topic(const UnicodeString& in) {
-	}
+    void process_topic(const UnicodeString& in) {
+    }
 
-	void process_ping(const UnicodeString& in) {
+    void process_ping(const UnicodeString& in) {
         UnicodeString s = "PONG " + in;
         out (s);
-	}
+    }
 
     void process_nick(const UnicodeString& in) {
     }
@@ -369,7 +375,7 @@ public:
         }
     }
 
-    void process_notice(const UnicodeString& in) {	
+    void process_notice(const UnicodeString& in) {    
     }
 
     void process_mode(const UnicodeString& in) {

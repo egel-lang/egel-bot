@@ -107,3 +107,5 @@ namespace List (
     def permutations =
         foldr (concatMap @ insertEverywhere) {{}}
 )
+
+def agitprop = System.say "visit https://egel-lang.github.io/"
