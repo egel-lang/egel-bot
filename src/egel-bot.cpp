@@ -222,6 +222,7 @@ public:
 
         // start up the module system
         OptionsPtr oo = Options().clone();
+        oo->add_include_path(".");
         ModuleManagerPtr mm = ModuleManager().clone();
         _machine = new Machine();
         NamespacePtr env = Namespace().clone();
@@ -295,7 +296,6 @@ public:
             for (auto d:_dispatch_table) {
                 if (s.startsWith(d.first)) {
                     s = remove_command(d.first, s);
-                    std::cout << d.first << " " << s << std::endl;
                     (this->*(d.second))(s);
                 }
             }
