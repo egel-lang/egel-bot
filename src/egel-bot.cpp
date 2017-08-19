@@ -150,9 +150,9 @@ private:
 
 // System.say o
 // send a PRIVMSG to the channel
-class Say: public Monadic {
+class Say: public Variadic {
 public:
-    MONADIC_PREAMBLE(Say, "System", "say");
+    VARIADIC_PREAMBLE(Say, "System", "say");
 
     typedef std::function<void(const UnicodeString&)> say_handler_t;
 
@@ -166,27 +166,28 @@ public:
         _say_handler(m);
     }
 
-    VMObjectPtr apply(const VMObjectPtr& arg0) const override {
+    VMObjectPtr apply(const VMObjectPtrs& args) const override {
 
         static VMObjectPtr nop = nullptr;
         if (nop == nullptr) nop = machine()->get_data_string("System", "nop");
 
-        if (arg0->tag() == VM_OBJECT_INTEGER) {
-            say(arg0->to_text());
-            return nop;
-        } else if (arg0->tag() == VM_OBJECT_FLOAT) {
-            say(arg0->to_text());
-            return nop;
-        } else if (arg0->tag() == VM_OBJECT_CHAR) {
-            say(arg0->to_text());
-            return nop;
-        } else if (arg0->tag() == VM_OBJECT_TEXT) {
-            auto s = VM_OBJECT_TEXT_VALUE(arg0);
-            say(s);
-            return nop;
-        } else {
-            return nullptr;
+        UnicodeString s;
+        for (auto arg: args) {
+            if (arg->tag() == VM_OBJECT_INTEGER) {
+                s += (arg->to_text());
+            } else if (arg->tag() == VM_OBJECT_FLOAT) {
+                s += (arg->to_text());
+            } else if (arg->tag() == VM_OBJECT_CHAR) {
+                s += (arg->to_text());
+            } else if (arg->tag() == VM_OBJECT_TEXT) {
+                s += VM_OBJECT_TEXT_VALUE(arg);
+            } else {
+                return nullptr;
+            }
         }
+        say(s);
+
+        return nop;
     }
 
 private:
