@@ -1,19 +1,11 @@
 # compiler and compile options
 CC=g++ --std=c++0x
-EGEL_SRC_DIR=../../egel/src/
 LIBS= \
 	-ldl \
-	-licudata \
-	-licui18n \
-	-licuio \
-	-licule \
-	-liculx \
-	-licutest \
-	-licutu \
-	-licuuc \
-	-legel
-CFLAGS=-c -Wall -pedantic -I$(EGEL_SRC_DIR)
-LDFLAGS=$(LIBS) -L$(EGEL_SRC_DIR)
+	-legel \
+	$(shell pkg-config --libs --cflags icu-uc icu-io)
+CFLAGS=-c -Wall -pedantic $(LIBS)
+LDFLAGS=$(LIBS)
 
 # source files and objects
 SOURCES= \
@@ -38,7 +30,7 @@ debug: CC=g++ --std=c++0x -g
 debug: $(SOURCES) $(EXECUTABLE)
 
 $(EXECUTABLE): $(OBJECTS) 
-	$(CC) $(LDFLAGS) $(OBJECTS) $(EGEL_SRC_DIR)libegel.a -o $@
+	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
 
 .cpp.o:
 	$(CC) $(CFLAGS) $< -o $@

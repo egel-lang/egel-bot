@@ -1,6 +1,6 @@
 # egel-bot
 
-A quick-and-dirty Egel IRC bot to test and showcase static linking
+A quick-and-dirty Egel IRC bot to test and showcase dynamic linking
 of the Egel runtime.
 
 ## Compiling
@@ -8,8 +8,7 @@ of the Egel runtime.
 This is a Linux application which needs the Egel interpreter sources,
 make sure they are installed and compiled.
 
-+ Give the `make archive` command in the Egel interpreter `src` directory to
-  create a static library.
++ Egel must be installed system wide, i.e., with the `install.sh` script.
 + Go to the `src` directory of the Egel IRC bot distribution.
 + Run `make`. Make sure the Egel interpreter is in a directory named `egel`
   next to Egel bot or adjust the Makefile.

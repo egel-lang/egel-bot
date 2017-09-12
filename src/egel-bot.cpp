@@ -9,15 +9,15 @@
 #include <vector>
 #include <functional>
 
-#include "utils.hpp"
-#include "position.hpp"
-#include "reader.hpp"
-#include "lexical.hpp"
-#include "syntactical.hpp"
-#include "machine.hpp"
-#include "modules.hpp"
-#include "eval.hpp"
-#include "builtin.hpp"
+#include <egel/utils.hpp>
+#include <egel/position.hpp>
+#include <egel/reader.hpp>
+#include <egel/lexical.hpp>
+#include <egel/syntactical.hpp>
+#include <egel/machine.hpp>
+#include <egel/modules.hpp>
+#include <egel/eval.hpp>
+#include <egel/builtin.hpp>
 
 #define EXECUTABLE_NAME "egel-bot"
 
