@@ -10,8 +10,7 @@ make sure they are installed and compiled.
 
 + Egel must be installed system wide, i.e., with the `install.sh` script.
 + Go to the `src` directory of the Egel IRC bot distribution.
-+ Run `make`. Make sure the Egel interpreter is in a directory named `egel`
-  next to Egel bot or adjust the Makefile.
++ Run `make`. 
 
 ## Running the bot
 
