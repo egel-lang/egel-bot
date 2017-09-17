@@ -235,7 +235,9 @@ public:
                 std::bind( &IRCHandler::out_message, this, std::placeholders::_1)
             );
 
-        mm->declare_object(say);
+        UnicodeStrings nn;
+        ::declare(env, nn, "say", "say");
+        _machine->enter_data(say);
 
         // fire up the evaluator
         _eval = new Eval(mm);
