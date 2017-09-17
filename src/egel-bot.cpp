@@ -236,7 +236,8 @@ public:
             );
 
         UnicodeStrings nn;
-        ::declare(env, nn, "say", "say");
+        nn.push_back(UnicodeString("System"));
+        ::declare(env, nn, "say", "System.say");
         _machine->enter_data(say);
 
         // fire up the evaluator
