@@ -365,7 +365,7 @@ public:
 
     void process_message(const UnicodeString& in) {
         std::ofstream logfile;
-		logfile.open ("last_command.txt");
+	logfile.open ("last_command.txt");
         UnicodeString s = in;
         callback_t main = std::bind( &IRCHandler::main_callback, this, std::placeholders::_1, std::placeholders::_2 );
         callback_t exc  = std::bind( &IRCHandler::exception_callback, this, std::placeholders::_1, std::placeholders::_2 );
