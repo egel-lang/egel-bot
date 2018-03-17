@@ -8,6 +8,8 @@
 #include <string.h>
 #include <vector>
 #include <functional>
+#include <iostream>
+#include <fstream>
 
 #include <egel/utils.hpp>
 #include <egel/position.hpp>
@@ -362,6 +364,8 @@ public:
     }
 
     void process_message(const UnicodeString& in) {
+        std::ofstream logfile;
+		logfile.open ("last_command.txt");
         UnicodeString s = in;
         callback_t main = std::bind( &IRCHandler::main_callback, this, std::placeholders::_1, std::placeholders::_2 );
         callback_t exc  = std::bind( &IRCHandler::exception_callback, this, std::placeholders::_1, std::placeholders::_2 );
@@ -370,6 +374,8 @@ public:
             if (s.startsWith(_nick + ":")) {
                 s = remove_colon(s);
                 try {
+                    logfile << s;
+                    logfile.close();
                     _eval->eval_line(s, main, exc);
                 } catch (Error e) {
                     out_error(e.error());
