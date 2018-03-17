@@ -17,7 +17,6 @@
 #include <egel/machine.hpp>
 #include <egel/modules.hpp>
 #include <egel/eval.hpp>
-#include <egel/builtin.hpp>
 
 #define EXECUTABLE_NAME "egel-bot"
 
