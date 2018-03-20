@@ -134,5 +134,5 @@ namespace List (
         foldr (concatMap . insertEverywhere) {{}}
 )
 
-def agitprop = System.say "visit https://egel-lang.github.io/"
+def agitprop = System:say "visit https://egel-lang.github.io/"
 
