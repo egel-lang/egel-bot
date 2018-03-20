@@ -8,6 +8,8 @@
 #include <string.h>
 #include <vector>
 #include <functional>
+#include <chrono>
+#include <thread>
 
 #include <egel/utils.hpp>
 #include <egel/position.hpp>
@@ -163,6 +165,7 @@ public:
         UnicodeString m = msg;
         m = m.findAndReplace("\n","-");
         _say_handler(m);
+        std::this_thread::sleep_for(std::chrono::milliseconds(500)); // sleep for 500ms to prevent flooding
     }
 
     VMObjectPtr apply(const VMObjectPtrs& args) const override {
@@ -236,7 +239,7 @@ public:
 
         UnicodeStrings nn;
         nn.push_back(UnicodeString("System"));
-        ::declare(env, nn, "say", "System.say");
+        ::declare(env, nn, "say", "System:say");
         _machine->enter_data(say);
 
         // fire up the evaluator
