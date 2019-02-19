@@ -198,8 +198,8 @@ private:
 
 class IRCHandler {
 public:
-    IRCHandler(const UnicodeString& node, const UnicodeString& service, const UnicodeString& channel, const UnicodeString& nick):
-        _node(node), _service(service), _channel(channel), _nick(nick) {
+    IRCHandler(const UnicodeString& node, const UnicodeString& service, const UnicodeString& channel, const UnicodeString& nick, const UnicodeString& passwd):
+        _node(node), _service(service), _channel(channel), _nick(nick), _passwd(passwd) {
     }
 
 private:
@@ -207,6 +207,7 @@ private:
     UnicodeString _service;
     UnicodeString _channel;
     UnicodeString _nick;
+    UnicodeString _passwd;
 
     bool _stop = false;
     IRCChannel _chan;
@@ -244,11 +245,12 @@ public:
 
         // fire up the evaluator
         _eval = new Eval(mm);
+        _machine->set_context( (void*) _eval);
 
         try {
             _eval->eval_load("script.eg");
             _eval->eval_command("using System");
-        } catch (Error e) {
+        } catch (Error &e) {
             std::cerr << e << std::endl;
             exit(EXIT_FAILURE);
         }
@@ -315,7 +317,7 @@ public:
     }
 
     void process_MOTD_end(const UnicodeString& in) {
-        out("JOIN #" + _channel);
+        out("PRIVMSG NickServ : IDENTIFY " + _passwd);
     }
 
     void process_name_reply(const UnicodeString& in) {
@@ -374,7 +376,7 @@ public:
                 s = remove_colon(s);
                 try {
                     _eval->eval_line(s, main, exc);
-                } catch (Error e) {
+                } catch (Error &e) {
                     out_error(e.error());
                 }
             }
@@ -382,6 +384,9 @@ public:
     }
 
     void process_notice(const UnicodeString& in) {    
+        if ( in.indexOf("identified") >= 0 ) {
+            out("JOIN #" + _channel);
+        }
     }
 
     void process_mode(const UnicodeString& in) {
@@ -436,7 +441,7 @@ private:
 };
 
 void display_usage () {
-    std::cout << "Usage: " << EXECUTABLE_NAME << " node service channel nick" << std::endl;
+    std::cout << "Usage: " << EXECUTABLE_NAME << " node service channel nick passwd" << std::endl;
     /*
     std::cout << EXECUTABLE_NAME << ' ' << EXECUTABLE_VERSION << std::endl;
     std::cout << EXECUTABLE_COPYRIGHT << ' ' << EXECUTABLE_AUTHORS << std::endl;
@@ -444,7 +449,7 @@ void display_usage () {
 }
 
 int main(int argc, char *argv[]) {
-    if (argc != 5) {
+    if (argc != 6) {
         display_usage();
         return EXIT_FAILURE;
     }
@@ -454,8 +459,9 @@ int main(int argc, char *argv[]) {
     aa.push_back(UnicodeString(argv[2]));
     aa.push_back(UnicodeString(argv[3]));
     aa.push_back(UnicodeString(argv[4]));
+    aa.push_back(UnicodeString(argv[5]));
 
-    IRCHandler handler(aa[0], aa[1], aa[2], aa[3]);
+    IRCHandler handler(aa[0], aa[1], aa[2], aa[3], aa[4]);
     handler.init();
     handler.process();
 
