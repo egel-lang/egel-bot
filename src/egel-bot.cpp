@@ -129,6 +129,7 @@ public:
         }
 
         std::cerr << "warning: garbled input" << std::endl;
+        exit(EXIT_FAILURE);
         return UnicodeString("");
 
         flush:

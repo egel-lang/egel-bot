@@ -121,7 +121,7 @@ namespace List (
         [ X -> any ((==) X) ]
 
     def notelem =
-        [ X -> all ((!=) X) ]
+        [ X -> all ((/=) X) ]
 
     def insertEverywhere =
         [ X nil -> {{X}}
@@ -133,6 +133,8 @@ namespace List (
     def permutations =
         foldr (concatMap . insertEverywhere) {{}}
 )
+
+using System 
 
 def agitprop = System:say "visit https://egel-lang.github.io/"
 
