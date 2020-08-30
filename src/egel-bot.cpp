@@ -150,22 +150,22 @@ private:
     int _fd;
 };
 
-// System.say o
+// System.print o
 // send a PRIVMSG to the channel
-class Say: public Variadic {
+class Print: public Variadic {
 public:
-    VARIADIC_PREAMBLE(Say, "System", "say");
+    VARIADIC_PREAMBLE(Print, "System", "print");
 
-    typedef std::function<void(const UnicodeString&)> say_handler_t;
+    typedef std::function<void(const UnicodeString&)> print_handler_t;
 
-    void set_handler(say_handler_t h) {
-        _say_handler = h;
+    void set_handler(print_handler_t h) {
+        _print_handler = h;
     }
 
-    void say(const UnicodeString& msg) const {
+    void print(const UnicodeString& msg) const {
         UnicodeString m = msg;
         m = m.findAndReplace("\n","-");
-        _say_handler(m);
+        _print_handler(m);
         std::this_thread::sleep_for(std::chrono::milliseconds(500)); // sleep for 500ms to prevent flooding
     }
 
@@ -188,13 +188,13 @@ public:
                 return nullptr;
             }
         }
-        say(s);
+        print(s);
 
         return nop;
     }
 
 private:
-    say_handler_t  _say_handler;
+    print_handler_t  _print_handler;
 };
 
 class IRCHandler {
@@ -234,15 +234,15 @@ public:
         mm->init(oo, _machine, env);
 
         // bypass module loading and directly insert local combinator into machine.
-        auto say = (std::static_pointer_cast<Say>) (Say(_machine).clone());
-        say->set_handler(
+        auto print = (std::static_pointer_cast<Print>) (Print(_machine).clone());
+        print->set_handler(
                 std::bind( &IRCHandler::out_message, this, std::placeholders::_1)
             );
 
         UnicodeStrings nn;
         nn.push_back(UnicodeString("System"));
-        ::declare(env, nn, "say", "System:say");
-        _machine->enter_data(say);
+        ::declare(env, nn, "print", "System:print");
+        _machine->enter_data(print);
 
         // fire up the evaluator
         _eval = new Eval(mm);

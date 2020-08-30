@@ -136,9 +136,9 @@ namespace List (
 
 using System 
 
-def agitprop = System:say "visit https://egel-lang.github.io/"
+def agitprop = System:print "visit https://egel-lang.github.io/"
 
-def quine0 = say(List:foldr(+)""(List:map[K->List:nth K{"\\","\"",",","egelbot: say(List:foldr(+)","(List:map[K->List:nth K{","}] {3,1,1,4,1,0,0,1,2,1,0,1,1,2,1,2,1,2,1,3,1,2,1,4,1,2,1,5,1,5}))"}] {3,1,1,4,1,0,0,1,2,1,0,1,1,2,1,2,1,2,1,3,1,2,1,4,1,2,1,5,1,5}))
+def quine0 = print(List:foldr(+)""(List:map[K->List:nth K{"\\","\"",",","egelbot: print(List:foldr(+)","(List:map[K->List:nth K{","}] {3,1,1,4,1,0,0,1,2,1,0,1,1,2,1,2,1,2,1,3,1,2,1,4,1,2,1,5,1,5}))"}] {3,1,1,4,1,0,0,1,2,1,0,1,1,2,1,2,1,2,1,3,1,2,1,4,1,2,1,5,1,5}))
 
-def quine1 = [Q B L->say(L+Q+B+Q+Q+Q+B+B+Q+Q+L+Q)]"\"""\\""egelbot: [Q B L->say(L+Q+B+Q+Q+Q+B+B+Q+Q+L+Q)]"
+def quine1 = [Q B L->print(L+Q+B+Q+Q+Q+B+B+Q+Q+L+Q)]"\"""\\""egelbot: [Q B L->print(L+Q+B+Q+Q+Q+B+B+Q+Q+L+Q)]"
 
