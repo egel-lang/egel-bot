@@ -358,7 +358,7 @@ public:
 
     void main_callback(VM* vm, const VMObjectPtr& o) {
         symbol_t nop = vm->enter_symbol("System", "nop");
-        if (o->symbol() != nop) {
+        if (!((o->symbol() == nop) && (o->tag() == VM_OBJECT_COMBINATOR)))  {
             out_message(result(o));
         }
     }
