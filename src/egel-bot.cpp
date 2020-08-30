@@ -181,13 +181,14 @@ public:
             } else if (arg->tag() == VM_OBJECT_FLOAT) {
                 s += (arg->to_text());
             } else if (arg->tag() == VM_OBJECT_CHAR) {
-                s += (arg->to_text());
+                s += VM_OBJECT_CHAR_VALUE(arg);
             } else if (arg->tag() == VM_OBJECT_TEXT) {
                 s += VM_OBJECT_TEXT_VALUE(arg);
             } else {
-                return nullptr;
+                s += (arg->to_text());
             }
         }
+
         print(s);
 
         return nop;
