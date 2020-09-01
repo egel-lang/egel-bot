@@ -152,9 +152,9 @@ private:
 
 // System.print o
 // send a PRIVMSG to the channel
-class Print: public Variadic {
+class NewPrint: public Variadic {
 public:
-    VARIADIC_PREAMBLE(Print, "System", "print");
+    VARIADIC_PREAMBLE(NewPrint, "System", "print");
 
     typedef std::function<void(const UnicodeString&)> print_handler_t;
 
@@ -234,16 +234,12 @@ public:
         NamespacePtr env = Namespace().clone();
         mm->init(oo, _machine, env);
 
-        // bypass module loading and directly insert local combinator into machine.
-        auto print = (std::static_pointer_cast<Print>) (Print(_machine).clone());
+        // override System:print
+        auto print = (std::static_pointer_cast<NewPrint>) (NewPrint(_machine).clone());
         print->set_handler(
                 std::bind( &IRCHandler::out_message, this, std::placeholders::_1)
             );
-
-        UnicodeStrings nn;
-        nn.push_back(UnicodeString("System"));
-        ::declare(env, nn, "print", "System:print");
-        _machine->enter_data(print);
+        _machine->define_data(print);
 
         // fire up the evaluator
         _eval = new Eval(mm);
