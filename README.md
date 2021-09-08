@@ -5,12 +5,11 @@ of the Egel runtime.
 
 ## Compiling
 
-This is a Linux application which needs the Egel interpreter sources,
-make sure they are installed and compiled.
+This is a Linux application which needs the Egel interpreter libaries,
+make sure they are compiled and installed.
 
 + Egel must be installed system wide.
-+ Go to the `src` directory of the Egel IRC bot distribution.
-+ Run `make`. 
++ Do a default cmake build.
 
 ## Running the bot
 

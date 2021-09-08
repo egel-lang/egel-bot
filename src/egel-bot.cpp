@@ -211,7 +211,7 @@ private:
     UnicodeString _nick;
     UnicodeString _passwd;
 
-    bool _stop = false;
+    // bool _stop = false;
     IRCChannel _chan;
 
     VM*     _machine;
