@@ -35,3 +35,7 @@ src/egel-bot
 # Or a possible generated archive
 # Don't follow dynamic libraries
 *.ego
+
+# don't follow cmake build or debug
+build/
+debug/

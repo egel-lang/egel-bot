@@ -8,7 +8,7 @@ of the Egel runtime.
 This is a Linux application which needs the Egel interpreter sources,
 make sure they are installed and compiled.
 
-+ Egel must be installed system wide, i.e., with the `install.sh` script.
++ Egel must be installed system wide.
 + Go to the `src` directory of the Egel IRC bot distribution.
 + Run `make`. 
 
