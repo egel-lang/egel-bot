@@ -343,7 +343,7 @@ public:
     }
 
     void main_callback(VM* vm, const VMObjectPtr& o) {
-        if (!((vm->is_none(o)) && (o->tag() == VM_OBJECT_COMBINATOR)))  {
+        if (!((vm->is_none(o))))  {
             out_message(result(o));
         }
     }
