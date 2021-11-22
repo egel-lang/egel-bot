@@ -171,9 +171,6 @@ public:
 
     VMObjectPtr apply(const VMObjectPtrs& args) const override {
 
-        static VMObjectPtr nop = nullptr;
-        if (nop == nullptr) nop = machine()->get_data_string("System", "nop");
-
         UnicodeString s;
         for (auto arg: args) {
             if (arg->tag() == VM_OBJECT_INTEGER) {
@@ -191,7 +188,7 @@ public:
 
         print(s);
 
-        return nop;
+        return machine()->create_none();
     }
 
 private:
@@ -227,8 +224,8 @@ public:
         // start up the machine
         OptionsPtr oo = Options().clone();
         oo->add_include_path(".");
-        ModuleManagerPtr mm = ModuleManager().clone();
-        _machine = new Machine(oo);
+        _machine = new Machine();
+        _machine->initialize(oo);
 
         // override System:print
         auto print = (std::static_pointer_cast<NewPrint>) (NewPrint(_machine).clone());
@@ -238,7 +235,7 @@ public:
         _machine->define_data(print);
 
         try {
-            _machine->eval_load("script.eg");
+            _machine->eval_command("import \"script.eg\"");
             _machine->eval_command("using System");
         } catch (Error &e) {
             std::cerr << e << std::endl;
@@ -346,8 +343,7 @@ public:
     }
 
     void main_callback(VM* vm, const VMObjectPtr& o) {
-        symbol_t nop = vm->enter_symbol("System", "nop");
-        if (!((o->symbol() == nop) && (o->tag() == VM_OBJECT_COMBINATOR)))  {
+        if (!((vm->is_none(o)) && (o->tag() == VM_OBJECT_COMBINATOR)))  {
             out_message(result(o));
         }
     }
