@@ -154,7 +154,7 @@ private:
 // send a PRIVMSG to the channel
 class NewPrint: public Variadic {
 public:
-    VARIADIC_PREAMBLE(NewPrint, "System", "print");
+    VARIADIC_PREAMBLE(VM_SUB_EGO, NewPrint, "System", "print");
 
     typedef std::function<void(const UnicodeString&)> print_handler_t;
 
@@ -215,8 +215,6 @@ private:
     IRCChannel _chan;
 
     VM*     _machine;
-    Eval*   _eval;
-
 public:
     void init() {
         // create the connection
@@ -226,13 +224,11 @@ public:
         out("NICK " + _nick);
         out("USER " + _nick + " localhost 0 : egel language IRC bot");
 
-        // start up the module system
+        // start up the machine
         OptionsPtr oo = Options().clone();
         oo->add_include_path(".");
         ModuleManagerPtr mm = ModuleManager().clone();
-        _machine = new Machine();
-        NamespacePtr env = Namespace().clone();
-        mm->init(oo, _machine, env);
+        _machine = new Machine(oo);
 
         // override System:print
         auto print = (std::static_pointer_cast<NewPrint>) (NewPrint(_machine).clone());
@@ -241,13 +237,9 @@ public:
             );
         _machine->define_data(print);
 
-        // fire up the evaluator
-        _eval = new Eval(mm);
-        _machine->set_context( (void*) _eval);
-
         try {
-            _eval->eval_load("script.eg");
-            _eval->eval_command("using System");
+            _machine->eval_load("script.eg");
+            _machine->eval_command("using System");
         } catch (Error &e) {
             std::cerr << e << std::endl;
             exit(EXIT_FAILURE);
@@ -373,7 +365,7 @@ public:
             if (s.startsWith(_nick + ":")) {
                 s = remove_colon(s);
                 try {
-                    _eval->eval_line(s, main, exc);
+                    _machine->eval_line(s, main, exc);
                 } catch (Error &e) {
                     out_error(e.error());
                 }
