@@ -24,7 +24,7 @@
 
 #define EXECUTABLE_VERSION_MAJOR   "0"
 #define EXECUTABLE_VERSION_MINOR   "0"
-#define EXECUTABLE_VERSION_PATCH "1"
+#define EXECUTABLE_VERSION_PATCH   "1"
 
 #define EXECUTABLE_VERSION \
     EXECUTABLE_VERSION_MAJOR "." \
@@ -338,18 +338,14 @@ public:
         return s.remove(0,n+1);
     }
 
-    UnicodeString result(const VMObjectPtr& o) {
-        return o->to_text();
-    }
-
     void main_callback(VM* vm, const VMObjectPtr& o) {
-        if (!((vm->is_none(o))))  {
-            out_message(result(o));
+        if (!(vm->is_none(o)))  {
+            out_message(o->to_text());
         }
     }
 
     void exception_callback(VM* vm, const VMObjectPtr& e) {
-         out_message("exception(" + result(e) + ")");
+         out_message("exception(" + (e->to_text()) + ")");
     }
 
     void process_message(const UnicodeString& in) {
