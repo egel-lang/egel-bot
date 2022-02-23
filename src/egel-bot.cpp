@@ -222,13 +222,13 @@ public:
         out("USER " + _nick + " localhost 0 : egel language IRC bot");
 
         // start up the machine
-        OptionsPtr oo = Options().clone();
+        OptionsPtr oo = Options::create();
         oo->add_include_path(".");
         _machine = new Machine();
         _machine->initialize(oo);
 
         // override System:print
-        auto print = (std::static_pointer_cast<NewPrint>) (NewPrint(_machine).clone());
+        auto print = (std::static_pointer_cast<NewPrint>) (NewPrint::create(_machine));
         print->set_handler(
                 std::bind( &IRCHandler::out_message, this, std::placeholders::_1)
             );
