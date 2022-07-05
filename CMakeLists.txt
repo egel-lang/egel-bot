@@ -112,6 +112,8 @@ endif()
 
 include_directories("${CMAKE_SOURCE_DIR}/src")
 include_directories("${EGELLIB_INCLUDE_DIRS}")
+include_directories("${ICU_INCLUDE_DIRS}")
+
 
 # objects
 add_library(objlib OBJECT ${SOURCE_LIST})

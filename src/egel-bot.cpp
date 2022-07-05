@@ -36,7 +36,7 @@
 #define EXECUTABLE_AUTHORS \
     "M.C.A. (Marco) Devillers"
 
-#define BUFFER_SIZE 512
+#define BUFFER_SIZE 2048
 
 class IRCChannel {
 public:
