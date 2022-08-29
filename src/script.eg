@@ -49,6 +49,10 @@ namespace List (
         [ F Z nil -> Z
         | F Z (cons X XX) -> F X (foldr F Z XX) ]
 
+    def scanl =
+        [ F Z {} -> {Z}
+        | F Z {X|XX} -> {Z | scanl F (F Z X) XX} ]
+
     def head =
         [ (cons X XX) -> X ]
 
