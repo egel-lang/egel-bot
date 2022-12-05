@@ -15,6 +15,9 @@ namespace System (
     def . =
         [ F G X -> F (G X) ]
 
+    def |> =
+        [ X F -> F X ]
+
     def flip = [ F X Y -> F Y X ]
 
     def uncurry = [ F (X,Y) -> F X Y ]
@@ -49,15 +52,21 @@ namespace List (
         [ F Z nil -> Z
         | F Z (cons X XX) -> F X (foldr F Z XX) ]
 
-    def scanl =
-        [ F Z {} -> {Z}
-        | F Z {X|XX} -> {Z | scanl F (F Z X) XX} ]
-
     def head =
         [ (cons X XX) -> X ]
 
     def tail =
         [ (cons X XX) -> XX ]
+
+    def scanl =
+        [ F Z nil -> cons Z nil
+        | F Z (cons X XX) -> cons Z (scanl F (F Z X) XX) ]
+
+    def last =
+        [ (cons X nil) -> X | (cons X XX) -> last XX ]
+
+    def init =
+        [ (cons X nil) -> nil | (cons X (cons Y YY)) -> cons X (init (cons Y YY)) ]
 
     def ++ =
         [ nil YY -> YY
