@@ -104,6 +104,10 @@ namespace List (
             if X <= Y then cons X (from_to (X+1) Y)
             else nil ]
 
+    def chunks =
+        [ _ nil -> nil 
+        | N L   -> if 0 < N then cons (take N L) (chunks N (drop N L))
+                   else nil ]
     def filter =
         [ P nil -> nil
         | P (cons X XX) -> if P X then cons X (filter P XX) 

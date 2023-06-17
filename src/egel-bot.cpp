@@ -36,7 +36,7 @@
 #define EXECUTABLE_AUTHORS \
     "M.C.A. (Marco) Devillers"
 
-#define BUFFER_SIZE 2048
+#define BUFFER_SIZE 4096
 
 class IRCChannel {
 public:
@@ -178,9 +178,9 @@ public:
             } else if (arg->tag() == VM_OBJECT_FLOAT) {
                 s += (arg->to_text());
             } else if (arg->tag() == VM_OBJECT_CHAR) {
-                s += VM_OBJECT_CHAR_VALUE(arg);
+                s += VMObjectChar::value(arg);
             } else if (arg->tag() == VM_OBJECT_TEXT) {
-                s += VM_OBJECT_TEXT_VALUE(arg);
+                s += VMObjectText::value(arg);
             } else {
                 s += (arg->to_text());
             }
