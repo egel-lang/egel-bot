@@ -11,7 +11,7 @@
 #include <chrono>
 #include <thread>
 
-#include <egel/utils.hpp>
+#include <egel/runtime.hpp>
 #include <egel/position.hpp>
 #include <egel/reader.hpp>
 #include <egel/lexical.hpp>
@@ -56,8 +56,8 @@ public:
         hints.ai_flags = AI_PASSIVE;
         hints.ai_protocol = 0;           /* Any protocol */
 
-        auto nod = unicode_to_char(node);
-        auto srv = unicode_to_char(service);
+        auto nod = VM::unicode_to_utf8_chars(node);
+        auto srv = VM::unicode_to_utf8_chars(service);
         s = getaddrinfo(nod, srv, &hints, &result);
         delete[] nod;
         delete[] srv;
@@ -138,7 +138,7 @@ public:
 
     void out(const UnicodeString& o) {
         UnicodeString s = o + "\r\n";
-        auto buf = unicode_to_char(s);
+        auto buf = VM::unicode_to_utf8_chars(s);
         int len = strlen(buf);
         if (len != send(_fd,buf,len,0)) {
             std::cerr << "warning: garbled output" << std::endl;
