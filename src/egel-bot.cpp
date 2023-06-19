@@ -20,6 +20,8 @@
 #include <egel/modules.hpp>
 #include <egel/eval.hpp>
 
+using namespace egel;
+
 #define EXECUTABLE_NAME "egel-bot"
 
 #define EXECUTABLE_VERSION_MAJOR   "0"
