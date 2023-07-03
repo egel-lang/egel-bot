@@ -113,16 +113,19 @@ endif()
 include_directories("${CMAKE_SOURCE_DIR}/src")
 include_directories("${EGELLIB_INCLUDE_DIRS}")
 include_directories("${ICU_INCLUDE_DIRS}")
+include_directories(/usr/local/include) # for lightning
 
 
 # objects
 add_library(objlib OBJECT ${SOURCE_LIST})
 set_property(TARGET objlib PROPERTY POSITION_INDEPENDENT_CODE 1)
-target_link_libraries(objlib fmt::fmt Threads::Threads ICU::uc ICU::i18n ICU::io ${EGELLIB_LIBRARIES})
+target_link_directories(objlib PRIVATE /usr/local/lib) # for GNU lightning
+target_link_libraries(objlib fmt::fmt Threads::Threads ICU::uc ICU::i18n ICU::io lightning ${EGELLIB_LIBRARIES})
 
 # the EgelBot 
 add_executable(egel-bot $<TARGET_OBJECTS:objlib>)
-target_link_libraries(egel-bot ${CMAKE_DL_LIBS} ${EGELLIB_LIBRARIES} fmt::fmt Threads::Threads ICU::uc ICU::i18n ICU::io)
+target_link_directories(egel-bot PRIVATE /usr/local/lib) # for GNU lightning
+target_link_libraries(egel-bot ${CMAKE_DL_LIBS} ${EGELLIB_LIBRARIES} fmt::fmt Threads::Threads ICU::uc ICU::i18n ICU::io lightning)
 
 # compiler dependent stuff
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
