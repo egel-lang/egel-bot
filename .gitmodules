@@ -1,0 +1,3 @@
+[submodule "vendor/egel"]
+	path = vendor/egel
+	url = git@github.com:egel-lang/egel.git
