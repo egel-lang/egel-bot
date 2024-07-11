@@ -66,6 +66,8 @@ file(GLOB SOURCE_LIST CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/*.cpp")
 
 # check for ICU, Threads, fmt
 # ICU components: data, i18n, io, le, lx, test, tu and uc.
+find_package(PkgConfig)
+pkg_check_modules(FFI REQUIRED libffi)
 find_package(ICU REQUIRED COMPONENTS data i18n io tu uc)
 find_package(Threads REQUIRED)
 find_package(fmt REQUIRED)
@@ -79,7 +81,7 @@ endif()
 
 find_path(
   EGELLIB_INCLUDE_DIR
-    egel/utils.hpp
+    egel/runtime.hpp
   HINTS
     ${EGELLIB_DIR}
 )
@@ -120,12 +122,12 @@ include_directories(/usr/local/include) # for lightning
 add_library(objlib OBJECT ${SOURCE_LIST})
 set_property(TARGET objlib PROPERTY POSITION_INDEPENDENT_CODE 1)
 target_link_directories(objlib PRIVATE /usr/local/lib) # for GNU lightning
-target_link_libraries(objlib fmt::fmt Threads::Threads ICU::uc ICU::i18n ICU::io lightning ${EGELLIB_LIBRARIES})
+target_link_libraries(objlib ${FFI_LIBRARIES} fmt::fmt Threads::Threads ICU::uc ICU::i18n ICU::io lightning ${EGELLIB_LIBRARIES})
 
 # the EgelBot 
 add_executable(egel-bot $<TARGET_OBJECTS:objlib>)
 target_link_directories(egel-bot PRIVATE /usr/local/lib) # for GNU lightning
-target_link_libraries(egel-bot ${CMAKE_DL_LIBS} ${EGELLIB_LIBRARIES} fmt::fmt Threads::Threads ICU::uc ICU::i18n ICU::io lightning)
+target_link_libraries(egel-bot ${FFI_LIBRARIES} ${CMAKE_DL_LIBS} ${EGELLIB_LIBRARIES} fmt::fmt Threads::Threads ICU::uc ICU::i18n ICU::io lightning)
 
 # compiler dependent stuff
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
