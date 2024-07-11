@@ -26,9 +26,6 @@ namespace System (
 
     def snd = [ (X,Y) -> Y ]
 
-    def @@ =
-        [ SELF NAME -> (get NAME SELF) SELF ]
-
 )
 
 namespace Opt (
