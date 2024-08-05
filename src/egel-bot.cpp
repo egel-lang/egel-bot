@@ -46,6 +46,7 @@ public:
     }
 
     void link(const UnicodeString& node, const UnicodeString& service) {
+        std::cout << "connecting... " << std::endl;
         // code adopted from the getaddrinfo man page
         struct addrinfo hints;
         struct addrinfo *result, *rp;
@@ -53,9 +54,9 @@ public:
 
         /* Obtain address(es) matching host/port */
         memset(&hints, 0, sizeof(struct addrinfo));
-        hints.ai_family = AF_UNSPEC;     /* Allow IPv4 or IPv6 */
+        hints.ai_family = AF_INET;     /* IPv4 */
         hints.ai_socktype = SOCK_STREAM; /* stream socket */
-        hints.ai_flags = AI_PASSIVE;
+        hints.ai_flags = AI_ADDRCONFIG | AI_V4MAPPED;
         hints.ai_protocol = 0;           /* Any protocol */
 
         auto nod = VM::unicode_to_utf8_chars(node);
@@ -69,6 +70,7 @@ public:
            exit(EXIT_FAILURE);
         }
 
+        std::cout << "got info... " << std::endl;
         /* getaddrinfo() returns a list of address structures.
           Try each address until we successfully connect(2).
           If socket(2) (or connect(2)) fails, we (close the socket

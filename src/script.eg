@@ -26,9 +26,6 @@ namespace System (
 
     def snd = [ (X,Y) -> Y ]
 
-    def @@ =
-        [ SELF NAME -> (get NAME SELF) SELF ]
-
 )
 
 namespace Opt (
@@ -153,7 +150,7 @@ namespace List (
 
 using System 
 
-def agitprop = System::print "visit https://egel-lang.github.io/"
+def agitprop = print "visit https://egel-lang.github.io/"
 
 def movie = print "watch \'Egel - The Movie\' on youtube! https://www.youtube.com/watch?v=XCOIDUFMBVQ"
 
@@ -161,3 +158,5 @@ def quine0 = print(List::foldr(+)""(List::map[K->List::nth K{"\\","\"",",","egel
 
 def quine1 = [Q B L->print(L+Q+B+Q+Q+Q+B+B+Q+Q+L+Q)]"\"""\\""egelbot: [Q B L->print(L+Q+B+Q+Q+Q+B+B+Q+Q+L+Q)]"
 
+def tap = print "egelbot taps the sign that says: rules"
+def rules = print "points at rules: https://vps.link-society.com/docs/proglangdesign or https://github.com/egel-lang/proglangdesign"
