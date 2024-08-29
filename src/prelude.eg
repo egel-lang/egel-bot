@@ -1,0 +1,514 @@
+@"""
+The 'prelude' defines often used combinators.
+"""
+
+namespace System (
+
+    def or =
+        @"System::or p q - boolean or"
+        [ false false -> false
+        | X Y         -> true ]
+
+    def and =
+        @"System::and p q - boolean and"
+        [ true true    -> true
+        | X Y          -> false ]
+
+    def not =
+        @"System::not p q - boolean not"
+        [ true  -> false
+        | X     -> true ]
+
+    def || = 
+        @"System::|| p q - 'lazy' or"
+        [ false F -> F none
+        | true  F -> true ]
+
+    def && = 
+        @"System::&& p q - 'lazy' and"
+        [ true F -> F none
+        | false F -> false ]
+
+    def fix = 
+        @"System::fix f - fixed point of f"
+        [ F -> F [ X -> (fix F) X ] ]
+
+    def . =
+        @"System::. f g - function composition"
+        [ F G X -> F (G X) ]
+
+    def |> =
+        @"System::|> x f - reverse application"
+        [ X F -> F X ]
+
+    def ||> =
+        @"System::||> x f - reverse application ignoring none"
+        [ none F -> none | X F -> F X ]
+
+    def @ =
+        @"System::@ f x - low binding application"
+        [ X F -> F X ]
+
+    def flip = 
+        @"System::flip f x y - flip two arguments"
+        [ F X Y -> F Y X ]
+
+    def join = 
+        @"System::join f x - f x x"
+        [ F X -> F X X ]
+
+    def uncurry = 
+        @"System::uncurry f (x, y) - uncurry arguments"
+        [ F (X,Y) -> F X Y ]
+
+    def iter = 
+        @"System::iter n f x - iterate a function"
+        [ 0 F X -> X | N F X -> iter (N - 1) F (F X) ]
+
+    def trace = 
+        @"System::trace n f x - trace iteration of a function"
+        [ 0 F X -> {X} | N F X -> {X|trace (N - 1) F (F X)} ]
+
+    def trace_until = 
+        @"System::trace_until f g x - trace until a guard holds"
+        [F G X -> if G X then {X} else {X|trace_until F G (F X)}]
+
+    def trace_while = 
+        @"System::trace_while f g x - trace while a guard holds"
+        [F G X -> if G X then {X|trace_while F G (F X)} else {}]
+
+    def while = 
+        @"System::while f x - apply f as long as it reduces"
+        [ F X -> let Y = F X in if Y == none then X else while F Y ]
+
+    def swap = 
+        @"System::swap (x,y) - swap a tuple"
+        [ (X,Y) -> (Y,X) ]
+
+    def proj =
+        @"System::proj n (x, .., y) - projection on tuple"
+        [ N (A, B)          -> List::nth N {A,B}
+        | N (A, B, C)       -> List::nth N {A,B,C}
+        | N (A, B, C, D)    -> List::nth N {A,B,C,D}
+        | N (A, B, C, D, E) -> List::nth N {A,B,C,D,E} ]
+
+    def fst = 
+        @"System::fst (x, y) - proj1 on tuple"
+        [ (X,Y) -> X ]
+
+    def snd = 
+        @"System::snd (x, y) - proj2 on tuple"
+        [ (X,Y) -> Y ]
+
+    #@"System::$ - a very mysterious operator"
+    #def $ = [F X -> F X]
+
+    def abs = 
+        @"System::abs x - absolute"
+        [X -> if X < 0 then 0 - X else X ]
+
+    def min = 
+        @"System::min x y - minimum"
+        [X Y -> if X < Y then X else Y ]
+
+    def max = 
+        @"System::max x y - maximum"
+        [X Y -> if X < Y then Y else X ]
+
+    def ** = 
+        @"System::** x y - power (temporary)"
+        [ N 0 -> 1 | N M -> N * (N ** (M - 1)) ]
+
+    def printf =
+        @"System::printf s x0 .. xn - print formatted"
+        napp [X -> print X] [F -> format F]
+)
+
+namespace Option (
+    data just
+    data nothing
+)
+
+namespace List (
+
+    using System
+
+    def length =
+        @"List::length l - length of a list"
+        [ nil -> 0
+        | (cons X XX) -> 1 + (length XX) ]
+
+    def foldl =
+        @"List::foldl f z l - left fold on a list"
+        [ F Z nil -> Z
+        | F Z (cons X XX) -> foldl F (F Z X) XX ]
+
+    def foldr =
+        @"List::foldr f z l - right fold on a list"
+        [ F Z nil -> Z
+        | F Z (cons X XX) -> F X (foldr F Z XX) ]
+
+    def scanl =
+        @"List::scanl f z l - left scan on a list"
+        [ F Z nil -> cons Z nil
+        | F Z (cons X XX) -> cons Z (scanl F (F Z X) XX) ]
+
+    def reduce =
+        @"List::reduce f l - reduce on non-empty list"
+        [ F {X|XX} -> foldl F X XX ]
+
+    def head =
+        @"List::head l - head of a list"
+        [ (cons X XX) -> X
+        | X -> throw "head of " + (to_text X) ]
+
+    def tail =
+        @"List::tail l - tail of a list"
+        [ (cons X XX) -> XX
+        | X -> throw "tail of " + (to_text X) ]
+
+    def last =
+        @"List::last l - last of a list"
+        [ (cons X nil) -> X 
+        | (cons X XX) -> last XX ]
+
+    def init =
+        @"List::init l - init of a list"
+        [ (cons X nil) -> nil
+        | (cons X XX)  -> cons X (init XX) ]
+
+    def inits = 
+        @"List::inits l - inits of a list"
+        [ nil -> cons nil nil 
+        | (cons X XX) -> cons nil (map (cons X) (inits XX)) ]
+
+    def tails = 
+        @"List::tails l - tails of a list"
+        [ nil -> cons nil nil
+        | (cons X XX) -> let YY = tails XX in cons (cons X (head YY)) YY ]
+
+    def ++ =
+        @"List::++ l0 l1 - concatenation of two lists"
+        [ nil YY -> YY
+        | (cons X XX) YY -> cons X (XX ++ YY) ]
+
+    def postpend =
+        @"List::postpend l e - postpend an element"
+        [ nil Y -> cons Y nil
+        | (cons X XX) Y -> cons X (postpend XX Y) ]
+
+    def map =
+        @"List::map f l - map a function over a list"
+        [ F nil -> nil
+        | F (cons X XX) -> let Y = F X in cons Y (map F XX) ]
+
+    def concat_map =
+        @"List::concat_map f l - map a function producing lists over a list"
+        [ F -> foldr ((++) . F) nil ]
+
+    def reverse = 
+        @"List::reverse l - reverse a list"
+       foldl (flip cons) nil
+
+    def block =
+        @"List::block n - list of number from 0 to n exclusive"
+        [ 0 -> nil
+        | N -> cons (N - 1) (block (N - 1)) ]
+
+    def repeat =
+        @"List::repeat n x - list of n x elements"
+        [ 0 X -> nil
+        | N X -> cons X (repeat (N - 1) X) ]
+
+    def power =
+        @"List::power l - powerset of a list"
+        [ {} -> {{}}
+        | {X|XX} -> [XX -> XX ++ map [XX -> {X|XX}] XX] (power XX) ]
+
+    def pairs =
+        @"List::pairs ll0 ll1 - product of two lists"
+        [XX YY -> concat_map [X -> map [Y -> (X,Y)] YY] XX]
+
+    def combine =
+        @"List::combine ll - all lists that are the product of the members of a list of lists"
+        [ {} -> {{}}
+        | {XX|XXX} -> let YY = combine XXX in concat_map [X -> map [XX -> {X|XX}] YY] XX ]
+
+
+    def nth =
+        @"List::nth n l - nth element of a list"
+        [ 0 (cons X XX) -> X
+        | N (cons X XX) -> nth (N - 1) XX ]
+
+    def index_of = 
+        @"List::index_of x xx - index of a member in list"
+         let F = fix 
+             [ F N X {} -> -1
+             | F N X {Y|YY} -> if X == Y then N else F (N+1) X YY ] in
+        [ X YY -> F 0 X YY ]
+
+    def insert =
+        @"List::insert n x l - insert an element at given position"
+        [ 0 X (cons Y YY) -> cons X YY
+        | I X (cons Y YY) -> cons Y (insert (I - 1) X YY) ]
+
+    def take =
+        @"List::take n l - take the first elements of a list"
+        [ 0 XX -> nil
+        | N nil -> nil
+        | N (cons X XX) -> cons X (take (N - 1) XX) ]
+
+    def drop =
+        @"List::drop n l - drop the first elements of a list"
+        [ 0 XX -> XX
+        | N nil -> nil
+        | N (cons X XX) -> drop (N - 1) XX ]
+
+    def split_at =
+        @"List::split_at n l - take and drop the first elements of a list"
+        [ N XX -> if N <= 0 then (nil, XX) else
+            [ nil -> (nil,nil)
+            | (cons X XX) -> let (XX0,XX1) = split_at (N - 1) XX in (cons X XX0, XX1) ] XX ]
+
+    def chunks =
+        @"List::chunks n l - list to list of chunks of given size"
+        [ _ nil -> nil
+        | N L   -> if 0 < N then cons (take N L) (chunks N (drop N L))
+                   else nil ]
+
+    def from_to =
+        @"List::from_to l u - list of numbers for lower to upper (inclusive)"
+        [ X Y -> 
+            if X < Y then cons X (from_to (X+1) Y)
+            else if Y < X then cons X (from_to (X - 1) Y)
+            else cons X nil ]
+
+    def filter =
+        @"List::filter p l - filter all members from a list which satisfy a predicate"
+        [ P nil -> nil
+        | P (cons X XX) -> if P X then cons X (filter P XX) 
+                                 else filter P XX ]
+
+    def split =
+        @"List::split p l - split a list into members and non-members of a predicate"
+        [ P nil -> (nil, nil)
+        | P (cons X XX) -> 
+            [(XX0, XX1) -> if P X then (cons X XX0, XX1) else (XX0, cons X XX1) ]
+                (split P XX) ]
+
+    def break =
+        @"List::break p l - split a list in two parts"
+        [ P nil -> (nil, nil)
+        | P (cons X XX) -> if P X then (nil, cons X XX) else 
+            let (YY, ZZ) = break P XX in (cons X YY, ZZ) ]
+
+    def split_on =
+        @"List::split_on x ll - split a list on a member"
+        [ X nil -> cons nil nil
+        | X XX  -> [(YY, nil) -> {YY} | (YY,ZZ) -> {YY | split_on X (tail ZZ)}] 
+                    (break ((==) X) XX) ]
+
+    def flatten =
+        @"List::flatten ll - flatten a list of lists to a list"
+        [ nil                   -> nil
+        | (cons nil YY)         -> flatten YY
+        | (cons (cons X XX) YY) -> cons X (flatten (cons XX YY)) ]
+
+    def zip =
+        @"List::zip l0 l1 - zip two lists to a list of pairs"
+        [ (cons X XX) (cons Y YY)  -> cons (X,Y) (zip XX YY)
+        | XX YY                    -> nil ]
+
+    def zip_with =
+        @"List::zip_with f l0 l1 - apply a function pairwise to members of two lists"
+        [ Z (cons X XX) (cons Y YY) -> cons (Z X Y) (zip_with Z XX YY)
+        | Z XX YY               -> nil ]
+
+    def transpose =
+        @"List::transpose ll - transpose a list of lists"
+        [ (cons nil XX) -> nil
+        | XX            -> cons (map head XX) (transpose (map tail XX)) ]
+
+    def any =
+        @"List::any p l - checks whether any element of a list satisfies a predicate"
+        [ P nil          -> false
+        | P (cons B BB)  -> if P B then true else any P BB ]
+
+    def all =
+        @"List::all p l - checks whether all elements of a list  satisfies a predicate"
+        [ P nil          -> true
+        | P (cons B BB)  -> if P B then all P BB else false ]
+
+    def elem =
+        @"List::elem x l - membership test"
+        [ X -> any ((==) X) ]
+
+    def not_elem =
+        @"List::not_elem x l - inverse membership test"
+        [ X -> all ((/=) X) ]
+
+    def union =
+        @"List::union l0 l1 - union of two lists (nˆ2 complexity)"
+        [ nil YY            -> YY
+        | (cons X XX) YY    -> if elem X YY then union XX YY else cons X (union XX YY) ]
+
+    def intersection =
+        @"List::intersection l0 l1 - intersection of two lists (nˆ2 complexity)"
+        [ nil YY            -> nil
+        | (cons X XX) YY    -> if elem X YY then cons X (intersection XX YY) else intersection XX YY ]
+
+    def difference =
+        @"List::difference l0 l1 - intersection of two lists (nˆ2 complexity)"
+        [ nil YY            -> nil
+        | (cons X XX) YY    -> if elem X YY then difference XX YY else cons X (difference XX YY) ]
+
+    def insert_everywhere =
+        @"List::insert_everywhere x l - insert a member in every position of a list"
+        [ X nil -> {{X}}
+        | X (cons Y YY) -> cons (cons X (cons Y YY)) (map (cons Y) (insert_everywhere X YY)) ]
+
+    def permutations =
+        @"List::permutations l - all permutations of a list"
+        foldr (concat_map . insert_everywhere) {{}}
+
+    def merge =
+        [ XX nil -> XX
+        | nil YY -> YY
+        | (cons X XX) (cons Y YY) ->
+                if X <= Y then cons X (merge XX (cons Y YY))
+                else cons Y (merge (cons X XX) YY) ]
+
+    def sort =
+        @"List::sort l - merge sort "
+        [ nil -> nil | (cons X nil) -> cons X nil
+        | XX -> let L = length XX in
+                merge (sort (take (L/2) XX)) (sort (drop (L/2) XX)) ]
+
+    def merge_by =
+        [ F XX nil -> XX
+        | F nil YY -> YY
+        | F (cons X XX) (cons Y YY) ->
+                if F X Y then cons X (merge_by F XX (cons Y YY))
+                else cons Y (merge_by F (cons X XX) YY) ]
+
+    def sort_by =
+        @"List::sort_by f l - merge sort with an order operator"
+        [ F nil -> nil | F (cons X nil) -> cons X nil
+        | F XX -> let L = length XX in
+                merge_by F (sort_by F (take (L/2) XX)) (sort_by F (drop (L/2) XX)) ]
+
+    def nub =
+        @"List::nub l - remove consecutive duplicates"
+        [ nil -> nil | (cons X nil) -> cons X nil
+        | (cons X (cons Y YY)) -> if X == Y then nub (cons Y YY)
+                                  else (cons X (nub (cons Y YY))) ]
+
+    def group =
+        @"List::group - group duplicates"
+        [ XX -> map [X -> cons X nil] XX |>
+            fix
+            [ F nil -> nil | F (cons XX nil) -> (cons XX nil)
+            | F (cons XX (cons YY ZZ)) -> 
+                if head XX == head YY then F (cons (XX ++ YY) ZZ)
+                else cons XX (F (cons YY ZZ)) ] ]
+
+    def unique =
+        @"List::unique l - make all members unique"
+        nub . sort
+
+    def sum = 
+        @"List::sum l - summation of list"
+        foldl (+) 0
+
+    def product = 
+        @"List::product l - product of list"
+        foldl (*) 1
+
+    def maximum = 
+        @"List::maximum l - maximum of list"
+        foldl System::max min_int 
+
+    def minimum = 
+        @"List::minimum l - minimum of list"
+        foldl System::min max_int 
+
+    def range =
+        @"List::range l f - iterate over elements (reverse map"
+        [ XX F -> map F XX ]
+
+    def range2 =
+        @"List::range2 l0 l1 f - iterate over elements of two lists"
+        [ XG YG F -> flatten (range XG [X -> range YG [Y -> F X Y]]) ]
+
+    def range3 =
+        @"List::range3 l0 l1 l2 f - iterate over elements of three lists"
+        [ XG YG ZG F -> flatten (range XG [X -> range2 YG ZG [Y Z  -> F X Y Z]]) ]
+
+)
+
+namespace System (
+    using System
+    using List
+
+    def args = 
+        @"System::args - arguments of the application"
+        trace_while ((+) 1) [N -> ((/=) none) (System::arg N)] 0 |> map System::arg
+)
+
+namespace String (
+    using System
+
+    def split = 
+        @"String::split n s - split a spring"
+        [ N S -> (String::extract 0 N S, String::extract N (String::count S - N) S) ]
+
+)
+
+namespace Math (
+    using System
+
+    def lift_unary =
+        @"Math::lift_unary f - lift a unary function on floats to ints"
+        [ F X:int -> to_int (F (to_float X)) | F X -> F X ]
+
+    def lift_binary =
+        @"Math::lift_binary f - lift a binary function on floats to ints"
+        [ F X:int Y:int -> to_int (F (to_float X) (to_float Y)) | F X Y -> F X Y ]
+
+    def pow_int = 
+        @"Math::pow_int n0 n1 - power of two integer values"
+        lift_binary pow
+)
+
+namespace System (
+    using System
+    using List
+
+    def help_exact_matches =
+        @"System::help_exact_matches s - return a list of exact docstring matches"
+        [S -> filter [M -> query_module_name M == S] query_modules |> 
+            [{} -> filter [C -> to_text C == S] (concat_map query_module_exports query_modules)
+                   |> map docstring
+            |XX -> head XX |> [M -> {docstring M,map to_text (query_module_exports M) |> reduce [X Y -> X + ", " + Y]}]] ]
+
+    def help_msg = """
+help            - print this message
+help "modules"  - list all modules
+help "text"     - print exact or else inexact matches againt a query
+"""
+
+    def help_inexact_matches =
+        @"System::help_inexact_matches s - return a list of inexact docstring matches"
+        [ S ->
+            let DD = map docstring query_modules ++ map docstring (concat_map query_module_exports query_modules) in
+            let DD = filter [T:text -> true|_ -> false] DD in
+            let R = Regex::compile S in
+                filter [D -> Regex::matches R D /= {}] DD ]
+
+    def help =
+        @"System::help - search for information"
+        napp [{"modules"} -> map query_module_name query_modules 
+             |{S:text} -> help_exact_matches S |> [{} -> help_inexact_matches S|M -> M]
+             | _ -> print help_msg] [X -> args_to_list X]
+)
+
