@@ -241,6 +241,7 @@ public:
         try {
             _machine->eval_command("import \"script.eg\"");
             _machine->eval_command("using System");
+            _machine->eval_command("using List");
         } catch (Error &e) {
             std::cerr << e << std::endl;
             exit(EXIT_FAILURE);
